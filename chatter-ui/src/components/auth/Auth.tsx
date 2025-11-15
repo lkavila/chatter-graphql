@@ -1,19 +1,31 @@
 import { Button, Stack, TextField } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useGetMe from "../../hooks/useGetMe";
+import { useNavigate } from "react-router-dom";
 
 interface AuthProps {
   actionLabel: "login" | "signup";
   onSubmit: (email: string, password: string) => Promise<void>;
-  children?: React.ReactNode
+  children?: React.ReactNode,
+  error?: string
 }
 
 const Auth: React.FC<AuthProps> = ({
   actionLabel,
   onSubmit,
-  children
+  children,
+  error
 }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { data } = useGetMe();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (data?.me) {
+      navigate("/");
+    }
+  }, [data, navigate])
 
   return <Stack spacing={3} sx={{ height: "100vh", maxWidth: {
     xs: "70%",
@@ -28,6 +40,8 @@ const Auth: React.FC<AuthProps> = ({
       name="email"
       value={email}
       onChange={(e) => setEmail(e.target.value)}
+      error={!!error}
+      helperText={error}
     />
     <TextField
       label="Passwod"
@@ -37,6 +51,8 @@ const Auth: React.FC<AuthProps> = ({
       name="password"
       value={password}
       onChange={(e) => setPassword(e.target.value)}
+      error={!!error}
+      helperText={error}
     />
     <Button variant="contained" onClick={() => onSubmit(email, password)}>{actionLabel}</Button>
     {children}

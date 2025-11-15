@@ -1,0 +1,35 @@
+import { useState } from "react"
+import { LOGIN_URL } from "../constants/urls";
+import client from "../constants/apollo-client";
+
+interface LoginRequest {
+  email: string
+  password: string
+}
+const useLogin = () => {
+  const [error, setError] = useState<string>();
+
+  const login = async (request: LoginRequest) => {
+    const response = await fetch(`${LOGIN_URL}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+    console.log("response", response)
+    if (!response.ok) {
+      if (response.status === 401) {
+        setError("Credentials are not valid");
+      } else {
+        setError("Something went wrong");
+      }
+      return
+    }
+    setError("");
+    await client.refetchQueries({ include: ["GetMe"] });
+  }
+  return { login, error };
+}
+
+export default useLogin
