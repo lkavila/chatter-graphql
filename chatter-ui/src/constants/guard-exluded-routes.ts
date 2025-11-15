@@ -1,0 +1,1 @@
+export const GUARD_EXCLUDED_ROUTES = ["/login", "/signup"];
