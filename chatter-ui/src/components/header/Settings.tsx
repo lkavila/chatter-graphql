@@ -8,13 +8,20 @@ import MenuItem from "@mui/material/MenuItem";
 import { useState } from "react";
 import { onLogout } from "../../utils/logout";
 import useLogout from "../../hooks/useLogout";
+import { snackVar } from "../../constants/snackbar";
+import { UNKNOWN_ERROR_SNACK_MESSAGE } from "../../constants/errors";
 
 const Settings = () => {
   const { logout } = useLogout();
   const onUserLogout = async () => {
-    handleCloseUserMenu();
-    await logout();
-    onLogout();
+    try {
+      handleCloseUserMenu();
+      await logout();
+      onLogout();
+    } catch (error) {
+      console.log(error);
+      snackVar(UNKNOWN_ERROR_SNACK_MESSAGE);
+    }
   }
   const settings = [
     { id: 1, name: "Profile", onClick: () => { handleCloseUserMenu() } },

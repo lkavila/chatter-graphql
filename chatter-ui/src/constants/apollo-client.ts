@@ -3,6 +3,8 @@ import { ErrorLink } from "@apollo/client/link/error";
 import { API_URL } from "./urls";
 import { GUARD_EXCLUDED_ROUTES } from "./guard-exluded-routes";
 import { onLogout } from "../utils/logout";
+import { snackVar } from "./snackbar";
+import { UNKNOWN_ERROR_SNACK_MESSAGE } from "./errors";
 
 const logoutLink = new ErrorLink(({ result, error }) => {
   console.log("error", result?.errors?.[0]?.extensions?.originalError);
@@ -11,7 +13,7 @@ const logoutLink = new ErrorLink(({ result, error }) => {
       onLogout();
     }
   }
-  if (error) console.error("error", error);
+  if (error) snackVar(UNKNOWN_ERROR_SNACK_MESSAGE)
 })
 
 const serverLink = new HttpLink({ uri: `${API_URL}/graphql` });
