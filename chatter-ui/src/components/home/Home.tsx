@@ -1,6 +1,8 @@
+import ChatList from "../chat-list/ChatList"
+
 const Home = () => {
   return (
-    <div>Home</div>
+    <ChatList />
   )
 }
 

@@ -1,6 +1,13 @@
 import { Logger, NotFoundException } from '@nestjs/common';
 import { AbstractEntity } from './abstract.entity';
-import { FilterQuery, Model, Types, UpdateQuery } from 'mongoose';
+import {
+  FilterQuery,
+  Model,
+  ProjectionType,
+  QueryOptions,
+  Types,
+  UpdateQuery,
+} from 'mongoose';
 
 export abstract class AbstractRepository<T extends AbstractEntity> {
   protected abstract readonly logger: Logger;
@@ -15,8 +22,14 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
     return await createdDocument.save();
   }
 
-  async findOne(filterQuery: FilterQuery<T>): Promise<T> {
-    const document = await this.model.findOne(filterQuery).lean<T>();
+  async findOne(
+    filterQuery: FilterQuery<T>,
+    projection?: ProjectionType<T>,
+    options?: QueryOptions<T>,
+  ): Promise<T> {
+    const document = await this.model
+      .findOne(filterQuery, projection, options)
+      .lean<T>();
     if (!document) {
       this.logger.warn('Document not found with filterQuery', filterQuery);
       throw new NotFoundException('Document not found.');

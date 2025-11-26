@@ -12,8 +12,10 @@ const logoutLink = new ErrorLink(({ result, error }) => {
     if (!GUARD_EXCLUDED_ROUTES.includes(window.location.pathname)) {
       onLogout();
     }
+  } else if (result && error) {
+    console.log("errorerror", error)
+    snackVar(UNKNOWN_ERROR_SNACK_MESSAGE)
   }
-  if (error) snackVar(UNKNOWN_ERROR_SNACK_MESSAGE)
 })
 
 const serverLink = new HttpLink({ uri: `${API_URL}/graphql` });

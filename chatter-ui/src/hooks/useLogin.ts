@@ -18,7 +18,6 @@ const useLogin = () => {
       },
       body: JSON.stringify(request),
     });
-    console.log("response", response)
     if (!response.ok) {
       if (response.status === 401) {
         setError("Credentials are not valid");

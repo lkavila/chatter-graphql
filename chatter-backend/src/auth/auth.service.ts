@@ -12,11 +12,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
   login(user: User, response: Response) {
-    const expires = new Date();
-    expires.setSeconds(
-      expires.getSeconds() +
-        this.configService.getOrThrow<number>('JWT_EXPIRATION'),
-    );
+    const expires =
+      new Date().getTime() +
+      Number(this.configService.getOrThrow<number>('JWT_EXPIRATION'));
 
     const tokenPayload: TokenPayload = {
       _id: user._id,
@@ -27,7 +25,7 @@ export class AuthService {
 
     response.cookie('Authentication', token, {
       httpOnly: true,
-      expires,
+      expires: new Date(expires),
     });
 
     return {
