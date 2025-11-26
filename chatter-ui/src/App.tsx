@@ -1,4 +1,4 @@
-import { Container, createTheme, CssBaseline, ThemeProvider } from "@mui/material";
+import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { ApolloProvider } from "@apollo/client/react";
 import { RouterProvider } from "react-router-dom";
 import router from "./components/Routes";
@@ -17,13 +17,11 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <ThemeProvider theme={darkTheme}>
-        <CssBaseline />
+        <CssBaseline enableColorScheme />
         <Header />
-        <Container>
-          <Guard>
-            <RouterProvider router={router} />
-          </Guard>
-        </Container>
+        <Guard>
+          <RouterProvider router={router} />
+        </Guard>
         <CustomizedSnackbar />
       </ThemeProvider>
     </ApolloProvider>

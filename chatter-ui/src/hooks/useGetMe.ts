@@ -1,22 +1,17 @@
-import { gql } from "@apollo/client"
 import { useQuery } from "@apollo/client/react"
+import { graphql } from "../gql"
 
-const GET_ME = gql`
+const getMeDocument = graphql(`
   query GetMe {
     me {
       _id
       email
     }
   }
-` 
+`)
 
 const useGetMe = () => {
-  return useQuery<{
-    me: {
-      _id: string
-      email: string
-    }
-  }>(GET_ME)
+  return useQuery(getMeDocument)
 }
 
 export default useGetMe

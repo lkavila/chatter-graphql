@@ -19,7 +19,7 @@ const Header = () => {
   const authenticated = useReactiveVar(authenticatedVar);
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ height: "6vh"}}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Branding />

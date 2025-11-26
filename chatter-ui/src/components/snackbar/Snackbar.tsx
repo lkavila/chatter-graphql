@@ -6,8 +6,6 @@ import { snackVar } from '../../constants/snackbar';
 const CustomizedSnackbar = () => {
   const snack = useReactiveVar(snackVar);
 
-  console.log("snack", snack);
-
   const handleClose = (
     event?: React.SyntheticEvent | Event,
     reason?: SnackbarCloseReason,

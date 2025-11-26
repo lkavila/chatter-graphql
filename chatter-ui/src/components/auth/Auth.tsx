@@ -28,9 +28,9 @@ const Auth: React.FC<AuthProps> = ({
   }, [data, navigate])
 
   return <Stack spacing={3} sx={{ height: "100vh", maxWidth: {
-    xs: "70%",
-    sm: "50%",
-    md: "30%"
+    xs: "60%",
+    sm: "40%",
+    md: "25%"
   }, margin: "0 auto", justifyContent: "center"}}>
     <TextField
       label="Email"
