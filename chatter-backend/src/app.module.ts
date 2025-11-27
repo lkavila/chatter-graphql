@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module, UnauthorizedException } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -11,6 +11,8 @@ import { LoggerModule } from 'nestjs-pino';
 import { AuthModule } from './auth/auth.module';
 import { ChatsModule } from './chats/chats.module';
 import { PubSubModule } from './common/pubsub/pubsub.module';
+import { Request } from 'express';
+import { AuthService } from './auth/auth.service';
 
 @Module({
   imports: [
@@ -22,12 +24,30 @@ import { PubSubModule } from './common/pubsub/pubsub.module';
       }),
       envFilePath: '.env',
     }),
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: true,
-      subscriptions: {
-        'graphql-ws': true,
-      },
+      useFactory: (authService: AuthService) => ({
+        autoSchemaFile: true,
+        subscriptions: {
+          'graphql-ws': {
+            onConnect: (context: any) => {
+              try {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+                const request: Request = context.extra.request;
+                const user = authService.verifyWs(request);
+                console.log(`user ${user.email} connected`);
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                context.user = user;
+              } catch (error) {
+                new Logger().error(error);
+                throw new UnauthorizedException();
+              }
+            },
+          },
+        },
+      }),
+      imports: [AuthModule],
+      inject: [AuthService],
     }),
     DatabaseModule,
     UsersModule,

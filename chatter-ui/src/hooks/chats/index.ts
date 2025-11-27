@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@apollo/client/react";
 import { graphql } from "../../gql";
 import { chatFragment } from "../../fragments/chat.fragment";
 import { MessagesQueryVariables } from "../../gql/graphql";
+import { updateMessages } from "../../cache/messages";
 
 const createChatDocument = graphql(`
   mutation CreateChat($createChatInput: CreateChatInput!) {
@@ -64,18 +65,14 @@ const createMessageDocument = graphql(`
 const useCreateMessage = (chatId?: string | null) => {
   return useMutation(createMessageDocument, {
     update: (cache, { data }) => {
-      const messages = cache.readQuery({ query: getMessagesDocument, variables: { chatId } });
-      if (!messages || !data || !chatId) return;
-      cache.writeQuery({
-        query: getMessagesDocument,
-        variables: { chatId },
-        data: { messages: (messages.messages || []).concat(data?.createMessage) }
-      })
+      if (data?.createMessage) {
+        updateMessages(cache, data.createMessage, chatId!);
+      }
     }
   });
 }
 
-const getMessagesDocument = graphql(`
+export const getMessagesDocument = graphql(`
   query Messages($chatId: String) {
     messages(chatId: $chatId) {
       ...MessageFragment

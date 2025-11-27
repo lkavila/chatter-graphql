@@ -4,6 +4,7 @@ export const messageFragment = graphql(`
     fragment MessageFragment on Message {
       _id
       content
-      createdAt
+      createdAt,
+      userId
     }
   `)

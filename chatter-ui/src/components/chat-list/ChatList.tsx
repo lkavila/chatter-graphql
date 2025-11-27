@@ -13,9 +13,9 @@ import currentChatVar from "../../constants/currentChat";
 const ChatList = () => {
   const [chatListAddVisible, setChatListAddVisible] = useState(false);
   const currentChat = useReactiveVar(currentChatVar);
-  const { data, loading, error } = useGetChats();
+  const { data } = useGetChats();
   const isMobile = useMediaQuery("(max-width: 800px)");
-  console.log({ data, loading, error });
+
   return (
     <Grid container sx={{ height: "94vh" }}>
       <Grid
