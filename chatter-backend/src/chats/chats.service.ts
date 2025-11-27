@@ -7,6 +7,11 @@ import { Types } from 'mongoose';
 @Injectable()
 export class ChatsService {
   constructor(private readonly chatRepository: ChatRepository) {}
+  userInChatFilter(userId: Types.ObjectId) {
+    return {
+      $or: [{ userId }, { userIds: { $in: [userId] } }, { isPrivate: false }],
+    };
+  }
 
   create(createChatInput: CreateChatInput, userId: Types.ObjectId) {
     return this.chatRepository.create({
@@ -17,8 +22,8 @@ export class ChatsService {
     });
   }
 
-  async findAll() {
-    return this.chatRepository.find({});
+  async findAll(userId: Types.ObjectId) {
+    return this.chatRepository.find({ ...this.userInChatFilter(userId) });
   }
 
   findOne(_id?: string) {

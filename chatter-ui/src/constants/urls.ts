@@ -4,4 +4,6 @@ const SIGNUP_URL = `${API_URL}/api/v1/auth/signup`;
 const LOGIN_URL = `${API_URL}/api/v1/auth/login`;
 const LOGOUT_URL = `${API_URL}/api/v1/auth/logout`;
 
-export { SIGNUP_URL, LOGIN_URL, API_URL, LOGOUT_URL };
+const WS_URL = process.env.REACT_APP_WS_URL;
+
+export { SIGNUP_URL, LOGIN_URL, API_URL, LOGOUT_URL, WS_URL };

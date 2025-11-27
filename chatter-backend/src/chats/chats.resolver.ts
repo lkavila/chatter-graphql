@@ -23,8 +23,8 @@ export class ChatsResolver {
 
   @Query(() => [Chat], { name: 'chats' })
   @UseGuards(GqlAuthGuard)
-  findAll() {
-    return this.chatsService.findAll();
+  findAll(@CurrentUser() user: TokenPayload) {
+    return this.chatsService.findAll(user._id);
   }
 
   @Query(() => Chat, { name: 'chat', nullable: true })

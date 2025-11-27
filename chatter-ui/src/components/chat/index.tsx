@@ -18,41 +18,48 @@ import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useEffect, useRef, useState } from "react";
 import currentChatVar from "../../constants/currentChat";
+import { useMessageCreated } from "../../hooks/graphQLSubscriptions/useMessageCreated";
 
 interface ChatProps {
   chatId: string;
   isMobile?: boolean;
 }
 const ChatComponent = ({ chatId, isMobile }: ChatProps) => {
-  const [message, setMessage] = useState("");
   const [createMessage] = useCreateMessage(chatId);
+  const { data } = useGetChat(chatId);
   const { data: messages } = useGetMessages({ chatId });
   const divRef = useRef<HTMLDivElement>(null);
+  useMessageCreated(chatId);
+  const [newMessage, setNewMessage] = useState("");
 
-  const scrollToBottom = () => {
-    if (divRef.current) {
-      divRef.current.scrollIntoView();
-    }
-  };
 
   useEffect(() => {
     scrollToBottom();
   }, []);
 
+  const scrollToBottom = () => {
+      console.log("divRef.current", divRef.current)
+    if (divRef.current) {
+      divRef.current.scrollIntoView({ behavior: "smooth" });
+      setTimeout(() => {
+        divRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  };
+
   const hanldeOnSendMessage = async () => {
     await createMessage({
       variables: {
         createMessageInput: {
-          content: message,
+          content: newMessage,
           chatId: chatId!,
         },
       },
     });
-    setMessage("");
+    setNewMessage("");
     scrollToBottom();
   };
 
-  const { data } = useGetChat(chatId);
   return (
     <Stack sx={{ height: "100%", padding: "10px" }}>
       <Box
@@ -74,9 +81,10 @@ const ChatComponent = ({ chatId, isMobile }: ChatProps) => {
         )}
         <Typography variant="subtitle1">{data?.chat?.name}</Typography>
       </Box>
-      <Box sx={{ overflow: "auto", maxHeight: "82vh" }}>
-        {messages?.messages?.map((message) => (
-          <Grid container alignItems="center" marginBottom="1rem">
+      <Box sx={{ overflow: "auto", maxHeight: "82vh", height: "82vh" }}>
+        {[...(messages?.messages || [])]?.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+        ?.map((message) => (
+          <Grid container alignItems="center" marginBottom="1rem" key={message._id}>
             <Grid size={1}>
               <Avatar src="" sx={{ width: 50, height: 50 }} />
             </Grid>
@@ -108,8 +116,8 @@ const ChatComponent = ({ chatId, isMobile }: ChatProps) => {
         <InputBase
           sx={{ ml: 1, flex: 1 }}
           placeholder="Write something"
-          onChange={(e) => setMessage(e.target.value)}
-          value={message}
+          onChange={(e) => setNewMessage(e.target.value)}
+          value={newMessage}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               hanldeOnSendMessage();
