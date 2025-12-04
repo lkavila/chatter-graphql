@@ -1,10 +1,16 @@
 import { graphql } from "../gql";
 
-export const messageFragment = graphql(`
-    fragment MessageFragment on Message {
+export const messageFragmentWithUser = graphql(`
+    fragment MessageFragmentWithUser on LastMessage {
       _id
       content
-      createdAt,
-      userId
+      createdAt
+      updatedAt
+      deleted
+      chat
+      user {
+        _id
+        username
+      }
     }
   `)

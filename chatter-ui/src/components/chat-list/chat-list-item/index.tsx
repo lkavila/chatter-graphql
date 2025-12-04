@@ -4,11 +4,11 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import { Divider, ListItemButton } from "@mui/material";
-import { Chat } from "../../../gql/graphql";
+import { Box, Divider, ListItemButton } from "@mui/material";
+import { ChatDocumentWithLastMessage } from "../../../gql/graphql";
 
 interface ChitListItemProps {
-  chat?: Chat,
+  chat?: ChatDocumentWithLastMessage,
   onClick: () => void,
   selected: boolean
 }
@@ -23,16 +23,20 @@ const ChitListItem = ({ chat, onClick, selected }: ChitListItemProps) => {
           <ListItemText
             primary={chat?.name}
             secondary={
-              <React.Fragment>
+              <Box component="span" sx={{ display: "flex" }}>
                 <Typography
                   component="span"
                   variant="body2"
                   sx={{ color: "text.primary", display: "inline" }}
                 >
-                  Ali Connors
+                  {chat?.lastMessage?.user?.username}
                 </Typography>
-                {" — I'll be in your neighborhood doing errands this…"}
-              </React.Fragment>
+                { chat?.lastMessage &&
+                <div>
+                  {`: ${chat?.lastMessage?.content}`}
+                </div>
+                }
+              </Box>
             }
           />
         </ListItemButton>

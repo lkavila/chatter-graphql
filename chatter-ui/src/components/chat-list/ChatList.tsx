@@ -53,8 +53,8 @@ const ChatList = () => {
               <ChitListItem
                 key={chat._id}
                 chat={chat}
-                onClick={() => currentChatVar(chat._id)}
-                selected={chat._id === currentChat}
+                onClick={() => currentChatVar(chat && { _id: chat._id, name: chat.name || "" })}
+                selected={chat._id === currentChat?._id}
               />
             ))}
           </List>
@@ -65,7 +65,7 @@ const ChatList = () => {
         sx={{ display: isMobile && !currentChat ? "none" : "block" }}
       >
         {currentChat ? (
-          <Chat chatId={currentChat} isMobile={isMobile} />
+          <Chat chat={currentChat} isMobile={isMobile} />
         ) : (
           <Container
             sx={{

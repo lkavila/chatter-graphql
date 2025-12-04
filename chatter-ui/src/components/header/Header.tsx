@@ -9,6 +9,7 @@ import Settings from './Settings';
 import { useReactiveVar } from '@apollo/client/react';
 import authenticatedVar from '../../constants/authenticated';
 import { unauthenticatedPages } from '../../constants/guard-exluded-routes';
+import { headerVHeight } from '../../constants/constants';
 
 const pages = [{
   title: "Home",
@@ -19,7 +20,7 @@ const Header = () => {
   const authenticated = useReactiveVar(authenticatedVar);
 
   return (
-    <AppBar position="static" sx={{ height: "6vh"}}>
+    <AppBar position="static" sx={{ height: `${headerVHeight}vh`}}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Branding />

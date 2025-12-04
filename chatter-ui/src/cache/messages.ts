@@ -1,8 +1,8 @@
 import { ApolloCache } from "@apollo/client";
-import { Message } from "../gql/graphql";
-import { getMessagesDocument } from "../hooks/chats";
+import { LastMessage } from "../gql/graphql";
+import { getMessagesDocument } from "../hooks/messages";
 
-export const updateMessages = (cache: ApolloCache, message: Message, chatId: string) => {
+export const updateMessages = (cache: ApolloCache, message: LastMessage, chatId: string) => {
     const messages = cache.readQuery({ query: getMessagesDocument, variables: { chatId } });
     cache.writeQuery({
       query: getMessagesDocument,

@@ -1,11 +1,28 @@
 import { graphql } from "../gql";
 
-export const chatFragment = graphql(`
-    fragment ChatFragment on Chat {
+export const chatFragmentWithLastMessage = graphql(`
+    fragment chatFragmentWithLastMessage on ChatDocumentWithLastMessage {
       _id
-      userId,
+      userId
       isPrivate
       userIds
       name
+      deleted
+      createdAt
+      lastMessage {
+        ...MessageFragmentWithUser
+      }
+    }
+  `)
+
+export const chatFragment = graphql(`
+    fragment ChatFragment on ChatDocument {
+      _id
+      userId
+      isPrivate
+      userIds
+      name
+      deleted
+      createdAt
     }
   `)

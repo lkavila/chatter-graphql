@@ -20,9 +20,16 @@ export class UsersService {
       const user = await this.userRepository.create({
         ...createUserInput,
         password: await this.hashPassword(createUserInput.password),
+        deleted: false,
+        isOnline: false,
+        isTyping: false,
+        lastConnection: new Date(),
+        username:
+          createUserInput.username || createUserInput.email.split('@')[0],
       });
       return user;
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (error.code === 11000) {
         throw new UnprocessableEntityException('Email already exists.');
       }
