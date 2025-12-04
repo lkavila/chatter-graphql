@@ -40,7 +40,10 @@ const ChatListAdd = ({ open, handleClose }: ChatListAddProps) => {
       setIsSaving(true);
       const { data } = await createChat({ variables: { createChatInput: { name: name?.trim() || undefined, isPrivate } } });
       setIsSaving(false);
-      currentChatVar(data?.createChat._id)
+      currentChatVar({
+        _id: data?.createChat._id as string,
+        name: data?.createChat.name || "",
+      })
       onClose();
     } catch (error) {
       setError(UNKNOWN_ERROR_MESSAGE);

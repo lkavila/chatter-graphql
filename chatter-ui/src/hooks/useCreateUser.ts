@@ -6,6 +6,7 @@ const CreateUserDocument = graphql(`
     createUser(createUserInput: $createUserInput) {
       _id
       email
+      username
     }
   }
 `)

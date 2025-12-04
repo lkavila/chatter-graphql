@@ -9,27 +9,24 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import {
-  useCreateMessage,
-  useGetChat,
-  useGetMessages,
-} from "../../hooks/chats";
+
 import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useEffect, useRef, useState } from "react";
 import currentChatVar from "../../constants/currentChat";
 import { useMessageCreated } from "../../hooks/graphQLSubscriptions/useMessageCreated";
+import { useCreateMessage, useGetMessages } from "../../hooks/messages";
+import { ICurrentChat } from "../../interfaces/chat.interfaces";
 
 interface ChatProps {
-  chatId: string;
+  chat: ICurrentChat;
   isMobile?: boolean;
 }
-const ChatComponent = ({ chatId, isMobile }: ChatProps) => {
-  const [createMessage] = useCreateMessage(chatId);
-  const { data } = useGetChat(chatId);
-  const { data: messages } = useGetMessages({ chatId });
+const ChatComponent = ({ chat, isMobile }: ChatProps) => {
+  const [createMessage] = useCreateMessage(chat._id);
+  const { data: messages } = useGetMessages({ chatId: chat._id });
   const divRef = useRef<HTMLDivElement>(null);
-  useMessageCreated(chatId);
+  useMessageCreated(chat._id);
   const [newMessage, setNewMessage] = useState("");
 
 
@@ -38,7 +35,6 @@ const ChatComponent = ({ chatId, isMobile }: ChatProps) => {
   }, []);
 
   const scrollToBottom = () => {
-      console.log("divRef.current", divRef.current)
     if (divRef.current) {
       divRef.current.scrollIntoView({ behavior: "smooth" });
       setTimeout(() => {
@@ -52,7 +48,7 @@ const ChatComponent = ({ chatId, isMobile }: ChatProps) => {
       variables: {
         createMessageInput: {
           content: newMessage,
-          chatId: chatId!,
+          chatId: chat._id!,
         },
       },
     });
@@ -79,7 +75,7 @@ const ChatComponent = ({ chatId, isMobile }: ChatProps) => {
         ) : (
           ""
         )}
-        <Typography variant="subtitle1">{data?.chat?.name}</Typography>
+        <Typography variant="subtitle1">{chat?.name}</Typography>
       </Box>
       <Box sx={{ overflow: "auto", maxHeight: "82vh", height: "82vh" }}>
         {[...(messages?.messages || [])]?.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())

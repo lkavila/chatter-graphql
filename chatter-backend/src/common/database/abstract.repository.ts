@@ -12,14 +12,14 @@ import {
 export abstract class AbstractRepository<T extends AbstractEntity> {
   protected abstract readonly logger: Logger;
 
-  constructor(protected readonly model: Model<T>) {}
+  constructor(public readonly model: Model<T>) {}
 
   async create(document: Omit<T, '_id'>): Promise<T> {
     const createdDocument = new this.model({
       ...document,
       _id: new Types.ObjectId(),
     });
-    return await createdDocument.save();
+    return (await createdDocument.save()).toObject();
   }
 
   async findOne(
@@ -53,8 +53,12 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
     return document;
   }
 
-  async find(filterQuery: FilterQuery<T>): Promise<T[]> {
-    return this.model.find(filterQuery).lean<T[]>();
+  async find(
+    filterQuery: FilterQuery<T>,
+    projection?: ProjectionType<T>,
+    options?: QueryOptions<T>,
+  ): Promise<T[]> {
+    return this.model.find(filterQuery, projection, options).lean<T[]>();
   }
 
   async findOneAndDelete(filterQuery: FilterQuery<T>) {
