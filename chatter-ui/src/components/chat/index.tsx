@@ -14,7 +14,6 @@ import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useEffect, useRef, useState } from "react";
 import currentChatVar from "../../constants/currentChat";
-import { useMessageCreated } from "../../hooks/graphQLSubscriptions/useMessageCreated";
 import { useCreateMessage, useGetMessages } from "../../hooks/messages";
 import { ICurrentChat } from "../../interfaces/chat.interfaces";
 
@@ -26,7 +25,6 @@ const ChatComponent = ({ chat, isMobile }: ChatProps) => {
   const [createMessage] = useCreateMessage(chat._id);
   const { data: messages } = useGetMessages({ chatId: chat._id });
   const divRef = useRef<HTMLDivElement>(null);
-  useMessageCreated(chat._id);
   const [newMessage, setNewMessage] = useState("");
 
 
