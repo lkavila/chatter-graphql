@@ -1,4 +1,3 @@
-import { LastMessage } from './../../../chatter-ui/src/gql/graphql';
 import { Inject, Injectable } from '@nestjs/common';
 import { ChatRepository } from '../chats/repositories/chat.repository';
 import { CreateMessageInput, GetMessagesArgs } from './dto/message.dto';
@@ -8,6 +7,7 @@ import { PubSub } from 'graphql-subscriptions';
 import { MESSAGE_CREATED } from './constants/pubsub-triggers';
 import { MessageRepository } from './repositories/message.repository';
 import { TokenPayload } from 'src/auth/token-payload.interface';
+import { LastMessage } from './dto/last-message.out';
 
 @Injectable()
 export class MessagesService {
@@ -77,14 +77,7 @@ export class MessagesService {
     return result as LastMessage[];
   }
 
-  async messageCreated({
-    chatId,
-    userId,
-  }: {
-    chatId: string;
-    userId: Types.ObjectId;
-  }) {
-    await this.chatRepository.validateUserIsInChat(userId, chatId);
+  messageCreated() {
     return this.pubSub.asyncIterableIterator(MESSAGE_CREATED);
   }
 }

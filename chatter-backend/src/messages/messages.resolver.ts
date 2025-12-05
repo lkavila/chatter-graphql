@@ -41,23 +41,17 @@ export class MessagesResolver {
   @Subscription(() => LastMessage, {
     filter: (
       payload: { messageCreated: LastMessage },
-      variables: { chatId: string },
+      _variables: { chatIds: string[] },
       context,
     ) => {
       const userId = context.req.user._id;
-      return (
-        payload.messageCreated.chat.toString() === variables.chatId &&
-        userId !== payload.messageCreated.user._id
-      );
+      return userId !== payload.messageCreated.user._id;
     },
   })
   messageCreated(
-    @Args() createMessageArgs: CreateMessagesArgs,
-    @CurrentUser() user: TokenPayload,
+    @Args() _createMessageArgs: CreateMessagesArgs,
+    @CurrentUser() _user: TokenPayload,
   ) {
-    return this.messagesService.messageCreated({
-      chatId: createMessageArgs.chatId,
-      userId: user._id,
-    });
+    return this.messagesService.messageCreated();
   }
 }

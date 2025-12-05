@@ -9,12 +9,15 @@ import { useGetChats } from "../../hooks/chats";
 import Chat from "../chat";
 import { useReactiveVar } from "@apollo/client/react";
 import currentChatVar from "../../constants/currentChat";
+import { useMessageCreated } from "../../hooks/graphQLSubscriptions/useMessageCreated";
 
 const ChatList = () => {
   const [chatListAddVisible, setChatListAddVisible] = useState(false);
   const currentChat = useReactiveVar(currentChatVar);
   const { data } = useGetChats();
   const isMobile = useMediaQuery("(max-width: 800px)");
+
+  useMessageCreated({ chatIds: data?.chats?.map((chat) => chat._id) || [] });
 
   return (
     <Grid container sx={{ height: "94vh" }}>
@@ -49,7 +52,9 @@ const ChatList = () => {
               },
             }}
           >
-            {data?.chats.map((chat) => (
+            {data?.chats && [...data?.chats]
+            .sort((a, b) => a.lastMessage ? new Date(b.lastMessage?.createdAt).getTime() - new Date(a.lastMessage?.createdAt).getTime() : 0)
+            .map((chat) => (
               <ChitListItem
                 key={chat._id}
                 chat={chat}

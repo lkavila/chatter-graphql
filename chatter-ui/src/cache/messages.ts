@@ -1,12 +1,22 @@
 import { ApolloCache } from "@apollo/client";
 import { LastMessage } from "../gql/graphql";
 import { getMessagesDocument } from "../hooks/messages";
+import client from "../constants/apollo-client";
 
-export const updateMessages = (cache: ApolloCache, message: LastMessage, chatId: string) => {
-    const messages = cache.readQuery({ query: getMessagesDocument, variables: { chatId } });
+export const updateMessages = async (cache: ApolloCache, message: LastMessage) => {
+  const messagesQueryOptions = {
+    query: getMessagesDocument,
+    variables: { chatId: message.chat },
+  }
+    const messages = cache.readQuery({ ...messagesQueryOptions });
+    let currentMessages = (messages?.messages || []).concat(message);
+    if (messages === null) {
+      // get messages
+      const chatMessages = await client.query({ query: getMessagesDocument, variables: { chatId: message.chat } });
+      currentMessages = chatMessages?.data?.messages || [];
+    }
     cache.writeQuery({
-      query: getMessagesDocument,
-      variables: { chatId },
-      data: { messages: (messages?.messages || []).concat(message) }
+      ...messagesQueryOptions,
+      data: { messages: currentMessages }
     })
 }

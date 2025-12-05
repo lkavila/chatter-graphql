@@ -16,7 +16,7 @@ const useCreateMessage = (chatId: string) => {
   return useMutation(createMessageDocument, {
     update: (cache, { data }) => {
       if (data?.createMessage) {
-        updateMessages(cache, data.createMessage, chatId!);
+        updateMessages(cache, data.createMessage);
         updateLatestMessage(cache, data.createMessage);
       }
     }
