@@ -3,8 +3,6 @@ import {
   Button,
   FormControlLabel,
   FormGroup,
-  IconButton,
-  InputBase,
   Modal,
   Paper,
   Stack,
@@ -12,11 +10,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/SearchOutlined";
 import { useState } from "react";
 import { useCreateChat } from "../../../hooks/chats";
 import { UNKNOWN_ERROR_MESSAGE } from "../../../constants/errors";
 import currentChatVar from "../../../constants/currentChat";
+import UsersAutocomplete from "../../autocomplete/usersAutocomplete";
 
 interface ChatListAddProps {
   open: boolean;
@@ -24,8 +22,10 @@ interface ChatListAddProps {
 }
 const ChatListAdd = ({ open, handleClose }: ChatListAddProps) => {
   const [isPrivate, setIsPrivate] = useState(false);
+  const [isGroup, setIsGroup] = useState(false);
   const [name, setName] = useState("");
   const [error, setError] = useState("");
+  const [usersIds, setUsersIds] = useState<string[]>([]);
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -33,12 +33,18 @@ const ChatListAdd = ({ open, handleClose }: ChatListAddProps) => {
 
   const handleSave = async () => {
     try {
-      if (!name) {
+      if ((isGroup || !isPrivate) && !name) {
         setError("Name is required");
         return;
       }
       setIsSaving(true);
-      const { data } = await createChat({ variables: { createChatInput: { name: name?.trim() || undefined, isPrivate } } });
+      const { data } = await createChat({ variables: { createChatInput: {
+        name: name?.trim() || undefined,
+        isPrivate,
+        userIds: isPrivate ? usersIds : undefined,
+        isGroup: isPrivate && isGroup
+      } } });
+
       setIsSaving(false);
       currentChatVar({
         _id: data?.createChat._id as string,
@@ -46,6 +52,7 @@ const ChatListAdd = ({ open, handleClose }: ChatListAddProps) => {
       })
       onClose();
     } catch (error) {
+      console.error("error", error)
       setError(UNKNOWN_ERROR_MESSAGE);
     }
   };
@@ -65,7 +72,7 @@ const ChatListAdd = ({ open, handleClose }: ChatListAddProps) => {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 400,
+          width: 600,
           bgcolor: "background.paper",
           border: "2px solid #000",
           boxShadow: 24,
@@ -76,20 +83,37 @@ const ChatListAdd = ({ open, handleClose }: ChatListAddProps) => {
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Add Chat
           </Typography>
-          <FormGroup>
-            <FormControlLabel
-              style={{ width: 0 }}
-              control={
-                <Switch
-                  defaultChecked={isPrivate}
-                  value={isPrivate}
-                  onChange={(event) => setIsPrivate(event.target.checked)}
-                />
-              }
-              label="Private"
-            />
-          </FormGroup>
-          {isPrivate ? (
+          <Stack direction="row" spacing={20}>
+            <FormGroup>
+              <FormControlLabel
+                style={{ width: 0 }}
+                control={
+                  <Switch
+                    defaultChecked={isPrivate}
+                    value={isPrivate}
+                    onChange={(event) => setIsPrivate(event.target.checked)}
+                  />
+                }
+                label="Private"
+              />
+              </FormGroup>
+            { isPrivate &&
+            <FormGroup>
+              <FormControlLabel
+                style={{ width: 0 }}
+                control={
+                  <Switch
+                    defaultChecked={isGroup}
+                    value={isGroup}
+                    onChange={(event) => setIsGroup(event.target.checked)}
+                  />
+                }
+                label="Group"
+              />
+            </FormGroup>
+            }
+          </Stack>
+          {(isGroup || !isPrivate) && (
             <Paper
               sx={{
                 mt: 2,
@@ -99,18 +123,27 @@ const ChatListAdd = ({ open, handleClose }: ChatListAddProps) => {
                 alignItems: "center",
               }}
             >
-              <InputBase sx={{ ml: 1, flex: 1 }} placeholder="Search Users" />
-              <IconButton>
-                <SearchIcon />
-              </IconButton>
+              <TextField
+                label="Chat Name"
+                sx={{ width: '100%' }}
+                error={!!error}
+                helperText={error}
+                onChange={(e) => setName(e.target.value)}
+              />
             </Paper>
-          ) : (
-            <TextField
-              label="Name"
-              error={!!error}
-              helperText={error}
-              onChange={(e) => setName(e.target.value)}
-            />
+          )}
+          {isPrivate && (
+            <Paper
+              sx={{
+                mt: 2,
+                p: 2,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <UsersAutocomplete onSelect={setUsersIds} multiple={isGroup} />
+            </Paper>
           )}
           <Button
             variant="outlined"

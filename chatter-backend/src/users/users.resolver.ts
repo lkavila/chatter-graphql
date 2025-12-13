@@ -7,6 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import type { TokenPayload } from 'src/auth/token-payload.interface';
+import { SearchUser } from './dto/search-user.out';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -48,5 +49,14 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard)
   getMe(@CurrentUser() user: TokenPayload) {
     return user;
+  }
+
+  @Query(() => [SearchUser], { name: 'searchUsers' })
+  @UseGuards(GqlAuthGuard)
+  searchUsers(
+    @Args('search', { nullable: true }) search: string,
+    @CurrentUser() user: TokenPayload,
+  ) {
+    return this.usersService.searchUsers(user._id, search);
   }
 }

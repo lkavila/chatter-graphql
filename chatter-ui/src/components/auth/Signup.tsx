@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom"
 import Auth from "./Auth"
 import { Link as MUILink, TextField } from "@mui/material"
-import useCreateUser from "../../hooks/useCreateUser"
+import useCreateUser from "../../hooks/users/useCreateUser"
 import { useState } from "react"
 import { extractErrorMessageFromGraphql } from "../../utils/errors"
-import useLogin from "../../hooks/useLogin"
+import useLogin from "../../hooks/auth/useLogin"
 
 const Signup = () => {
   const [error, setError] = useState<string>();

@@ -70,4 +70,21 @@ export class UsersService {
     }
     return user;
   }
+
+  async searchUsers(currentUserId: Types.ObjectId, search?: string) {
+    const searchRegexQuery = search
+      ? [
+          { username: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } },
+        ]
+      : [];
+    return this.userRepository.model
+      .find({
+        _id: { $ne: currentUserId },
+        $or: searchRegexQuery,
+        deleted: false,
+      })
+      .select('username email isOnline lastConnection')
+      .limit(20);
+  }
 }

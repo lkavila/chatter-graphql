@@ -5,19 +5,22 @@ import { AbstractEntity } from 'src/common/database/abstract.entity';
 @Schema()
 export class Chat extends AbstractEntity {
   @Prop()
-  userId: Types.ObjectId;
-
-  @Prop()
   isPrivate: boolean;
 
-  @Prop([String])
-  userIds: string[];
+  @Prop()
+  isGroup: boolean;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
+  userIds: Types.ObjectId[];
 
   @Prop()
   name?: string;
 
   @Prop({ default: false })
   deleted: boolean;
+
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  createdBy: Types.ObjectId;
 
   @Prop()
   createdAt: Date;

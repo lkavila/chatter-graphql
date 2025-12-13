@@ -1,6 +1,6 @@
 import { Button, Stack, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import useGetMe from "../../hooks/useGetMe";
+import useGetMe from "../../hooks/auth/useGetMe";
 import { useNavigate } from "react-router-dom";
 import { screenVHeight } from "../../constants/constants";
 

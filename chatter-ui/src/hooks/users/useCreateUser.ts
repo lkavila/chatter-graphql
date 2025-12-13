@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client/react";
-import { graphql } from "../gql";
+import { graphql } from "../../gql";
 
 const CreateUserDocument = graphql(`
   mutation CreateUser($createUserInput: CreateUserInput!) {

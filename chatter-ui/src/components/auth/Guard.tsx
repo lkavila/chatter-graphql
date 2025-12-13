@@ -1,5 +1,5 @@
 import { JSX, useEffect } from "react";
-import useGetMe from "../../hooks/useGetMe"
+import useGetMe from "../../hooks/auth/useGetMe"
 import { GUARD_EXCLUDED_ROUTES } from "../../constants/guard-exluded-routes";
 import authenticatedVar from "../../constants/authenticated";
 

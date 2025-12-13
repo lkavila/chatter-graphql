@@ -1,10 +1,11 @@
 import { graphql } from "../gql";
 
 export const chatFragmentWithLastMessage = graphql(`
-    fragment chatFragmentWithLastMessage on ChatDocumentWithLastMessage {
+    fragment ChatFragmentWithLastMessage on ChatDocumentWithLastMessage {
       _id
-      userId
+      createdBy
       isPrivate
+      isGroup
       userIds
       name
       deleted
@@ -18,8 +19,9 @@ export const chatFragmentWithLastMessage = graphql(`
 export const chatFragment = graphql(`
     fragment ChatFragment on ChatDocument {
       _id
-      userId
+      createdBy
       isPrivate
+      isGroup
       userIds
       name
       deleted

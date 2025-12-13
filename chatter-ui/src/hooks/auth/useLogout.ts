@@ -1,4 +1,4 @@
-import { LOGOUT_URL } from "../constants/urls";
+import { LOGOUT_URL } from "../../constants/urls";
 
 const useLogout = () => {
   const logout = async () => {

@@ -14,8 +14,10 @@ import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useEffect, useRef, useState } from "react";
 import currentChatVar from "../../constants/currentChat";
-import { useCreateMessage, useGetMessages } from "../../hooks/messages";
+import { useCountMessages, useCreateMessage, useGetMessages } from "../../hooks/messages";
 import { ICurrentChat } from "../../interfaces/chat.interfaces";
+import { pageSize } from "../../constants/constants";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 interface ChatProps {
   chat: ICurrentChat;
@@ -23,14 +25,16 @@ interface ChatProps {
 }
 const ChatComponent = ({ chat, isMobile }: ChatProps) => {
   const [createMessage] = useCreateMessage(chat._id);
-  const { data: messages } = useGetMessages({ chatId: chat._id });
+  const { messagesCount, countMessages } = useCountMessages(chat._id);
+  const { data: messages, fetchMore } = useGetMessages({ chatId: chat._id, limit: pageSize, skip: 0 });
   const divRef = useRef<HTMLDivElement>(null);
   const [newMessage, setNewMessage] = useState("");
 
 
   useEffect(() => {
     scrollToBottom();
-  }, []);
+    countMessages();
+  }, [countMessages]);
 
   const scrollToBottom = () => {
     if (divRef.current) {
@@ -76,27 +80,34 @@ const ChatComponent = ({ chat, isMobile }: ChatProps) => {
         <Typography variant="subtitle1">{chat?.name}</Typography>
       </Box>
       <Box sx={{ overflow: "auto", maxHeight: "82vh", height: "82vh" }}>
-        {[...(messages?.messages || [])]?.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-        ?.map((message) => (
-          <Grid container alignItems="center" marginBottom="1rem" key={message._id}>
-            <Grid size={1}>
-              <Avatar src="" sx={{ width: 50, height: 50 }} />
-            </Grid>
-            <Grid size={11}>
-              <Stack>
-                <Paper sx={{ width: "fit-content" }}>
-                  <Typography sx={{ padding: "0.5rem" }}>
-                    {message.content}
+        <InfiniteScroll
+          dataLength={messages?.messages?.length || 0}
+          next={() => fetchMore({ variables: { skip: messages?.messages?.length } })}
+          hasMore={messages?.messages && messagesCount ? messages.messages.length < messagesCount : false}
+          loader={<h4>Loading...</h4>}
+        >
+          {[...(messages?.messages || [])]?.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+          ?.map((message) => (
+            <Grid container alignItems="center" marginBottom="1rem" key={message._id}>
+              <Grid size={1}>
+                <Avatar src="" sx={{ width: 50, height: 50 }} />
+              </Grid>
+              <Grid size={11}>
+                <Stack>
+                  <Paper sx={{ width: "fit-content" }}>
+                    <Typography sx={{ padding: "0.5rem" }}>
+                      {message.content}
+                    </Typography>
+                  </Paper>
+                  <Typography variant="caption" sx={{ marginLeft: "0.25rem" }}>
+                    {new Date(message.createdAt).toLocaleTimeString()}
                   </Typography>
-                </Paper>
-                <Typography variant="caption" sx={{ marginLeft: "0.25rem" }}>
-                  {new Date(message.createdAt).toLocaleTimeString()}
-                </Typography>
-              </Stack>
+                </Stack>
+              </Grid>
             </Grid>
-          </Grid>
-        ))}
-        <div ref={divRef}></div>
+          ))}
+          <div ref={divRef}></div>
+        </InfiniteScroll>
       </Box>
       <Paper
         sx={{

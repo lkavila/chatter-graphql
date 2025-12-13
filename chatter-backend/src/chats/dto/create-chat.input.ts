@@ -15,6 +15,11 @@ export class CreateChatInput {
   @IsBoolean()
   isPrivate: boolean;
 
+  @Field()
+  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  isGroup: boolean;
+
   @Field(() => [String], { nullable: true })
   @IsArray()
   @IsString({ each: true })

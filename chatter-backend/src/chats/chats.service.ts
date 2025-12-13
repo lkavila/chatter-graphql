@@ -4,6 +4,11 @@ import { UpdateChatInput } from './dto/update-chat.input';
 import { ChatRepository } from './repositories/chat.repository';
 import { Types } from 'mongoose';
 import { MessageRepository } from 'src/messages/repositories/message.repository';
+import { PubSub } from 'graphql-subscriptions';
+import { PUB_SUB } from 'src/common/constants/injection-tokens';
+import { ChatDocumentWithLastMessage } from './dto/chat.document';
+import { CHAT_CREATED } from 'src/messages/constants/pubsub-triggers';
+import { PaginationArgs } from 'src/common/dto/pagination-args.dto';
 
 @Injectable()
 export class ChatsService {
@@ -11,26 +16,38 @@ export class ChatsService {
     private readonly chatRepository: ChatRepository,
     @Inject(forwardRef(() => MessageRepository))
     private readonly messageRepository: MessageRepository,
+    @Inject(PUB_SUB) private readonly pubSub: PubSub,
   ) {}
   userInChatFilter(userId: Types.ObjectId) {
     return {
-      $or: [{ userId }, { userIds: { $in: [userId] } }, { isPrivate: false }],
+      $or: [
+        { createdBy: userId },
+        { userIds: { $in: [userId] } },
+        { isPrivate: false },
+      ],
     };
   }
 
   async create(createChatInput: CreateChatInput, userId: Types.ObjectId) {
     const chat = await this.chatRepository.create({
       ...createChatInput,
-      userId,
-      userIds: createChatInput.userIds || [],
+      userIds:
+        createChatInput.userIds?.map((id) => new Types.ObjectId(id)) || [],
       deleted: false,
       createdAt: new Date(),
+      createdBy: new Types.ObjectId(userId),
     });
 
-    return {
+    const chatWithLastMessage = {
       ...chat,
       lastMessage: null,
     };
+
+    await this.pubSub.publish(CHAT_CREATED, {
+      chatCreated: chatWithLastMessage,
+    });
+
+    return chatWithLastMessage;
   }
 
   async findAll(userId: Types.ObjectId) {
@@ -39,15 +56,15 @@ export class ChatsService {
 
   async findAllWithLastMessage(
     userId: Types.ObjectId,
-    options?: Record<string, number | string>,
+    pagintaionArgs?: PaginationArgs,
   ) {
     const currentOptions = {
-      limit: (options?.limit && (options.limit as number)) || 30,
-      skip: (options?.skip && (options.skip as number)) || 0,
+      limit: (pagintaionArgs?.limit && pagintaionArgs.limit) || 10,
+      skip: (pagintaionArgs?.skip && pagintaionArgs.skip) || 0,
     };
     const data = await this.chatRepository.model.aggregate([
       {
-        $match: { ...this.userInChatFilter(userId) },
+        $match: { ...this.userInChatFilter(userId), deleted: false },
       },
       {
         $lookup: {
@@ -67,6 +84,13 @@ export class ChatsService {
           preserveNullAndEmptyArrays: true, // si no hay mensajes, se deja como null
         },
       },
+      {
+        $sort: {
+          'lastMessage.createdAt': -1,
+        },
+      },
+      { $skip: currentOptions.skip },
+      { $limit: currentOptions.limit },
       {
         $lookup: {
           from: 'users',
@@ -102,16 +126,9 @@ export class ChatsService {
           },
         },
       },
-      {
-        $sort: {
-          'lastMessage.createdAt': -1,
-        },
-      },
-      { $skip: currentOptions.skip },
-      { $limit: currentOptions.limit },
     ]);
-    console.log(data);
-    return data;
+
+    return data as ChatDocumentWithLastMessage[];
   }
 
   async findLastMessageByChat(chatId: Types.ObjectId) {
@@ -141,5 +158,13 @@ export class ChatsService {
 
   remove(id: number) {
     return `This action removes a #${id} chat`;
+  }
+
+  chatCreated() {
+    return this.pubSub.asyncIterableIterator(CHAT_CREATED);
+  }
+
+  count() {
+    return this.chatRepository.model.countDocuments({ deleted: false });
   }
 }
