@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import Auth from "./Auth"
 import { Link as MUILink } from "@mui/material"
-import useLogin from "../../hooks/useLogin";
+import useLogin from "../../hooks/auth/useLogin";
 
 const Login = () => {
   const { login, error } = useLogin();

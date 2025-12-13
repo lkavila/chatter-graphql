@@ -3,21 +3,34 @@ import ChitListItem from "./chat-list-item";
 import ForumIcon from "@mui/icons-material/Forum";
 import { Container, Divider, Grid, Stack, useMediaQuery } from "@mui/material";
 import ChatListHeader from "./chat-list-header/ChatListHeader";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ChatListAdd from "./chat-list-add";
-import { useGetChats } from "../../hooks/chats";
+import { useCountChats, useGetChats } from "../../hooks/chats";
 import Chat from "../chat";
 import { useReactiveVar } from "@apollo/client/react";
 import currentChatVar from "../../constants/currentChat";
 import { useMessageCreated } from "../../hooks/graphQLSubscriptions/useMessageCreated";
+import { useChatCreated } from "../../hooks/graphQLSubscriptions/useChatCreated";
+import { pageSize } from "../../constants/constants";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const ChatList = () => {
   const [chatListAddVisible, setChatListAddVisible] = useState(false);
+  const { countChats, chatsCount } = useCountChats();
+  useEffect(() => {
+    countChats();
+  }, [countChats]);
   const currentChat = useReactiveVar(currentChatVar);
-  const { data } = useGetChats();
+  const { data, fetchMore } = useGetChats({
+    limit: pageSize,
+    skip: 0,
+  });
   const isMobile = useMediaQuery("(max-width: 800px)");
 
+  // subscription to listen to new messages
   useMessageCreated({ chatIds: data?.chats?.map((chat) => chat._id) || [] });
+  // subscription to listen to new chats
+  useChatCreated();
 
   return (
     <Grid container sx={{ height: "94vh" }}>
@@ -52,16 +65,30 @@ const ChatList = () => {
               },
             }}
           >
-            {data?.chats && [...data?.chats]
-            .sort((a, b) => a.lastMessage ? new Date(b.lastMessage?.createdAt).getTime() - new Date(a.lastMessage?.createdAt).getTime() : 0)
-            .map((chat) => (
-              <ChitListItem
-                key={chat._id}
-                chat={chat}
-                onClick={() => currentChatVar(chat && { _id: chat._id, name: chat.name || "" })}
-                selected={chat._id === currentChat?._id}
-              />
-            ))}
+            <InfiniteScroll
+              dataLength={chatsCount || 0}
+              next={() => fetchMore({ variables: { skip: data?.chats?.length } })}
+              hasMore={data?.chats ? data?.chats?.length < chatsCount : false}
+              loader={<h4>Loading...</h4>}
+            >
+              {data?.chats && [...data?.chats]
+              .sort((a, b) => {
+                if (!a.lastMessage) return -1;
+                const lastMessageDateA = new Date(a.lastMessage?.createdAt);
+                const lastMessageDateB = new Date(b.lastMessage?.createdAt);
+                return lastMessageDateA.getTime() - lastMessageDateB.getTime();
+              })
+              .map((chat) => (
+                <ChitListItem
+                  key={chat._id}
+                  chat={chat}
+                  onClick={() => currentChatVar(chat && { _id: chat._id, name: chat.name || "" })}
+                  selected={chat._id === currentChat?._id}
+                />
+              ))
+              .reverse()
+              }
+            </InfiniteScroll>
           </List>
         </Stack>
       </Grid>

@@ -51,6 +51,9 @@ export class MessagesService {
     if (!userHasAccess?._id) return null;
     const result = await this.messagesRepository.model.aggregate([
       { $match: { chat: new Types.ObjectId(getMessagesArgs.chatId) } },
+      { $sort: { createdAt: -1 } },
+      { $skip: getMessagesArgs.skip },
+      { $limit: getMessagesArgs.limit },
       {
         $lookup: {
           from: 'users',
@@ -79,5 +82,11 @@ export class MessagesService {
 
   messageCreated() {
     return this.pubSub.asyncIterableIterator(MESSAGE_CREATED);
+  }
+
+  countMessages(chatId: string) {
+    return this.messagesRepository.model.countDocuments({
+      chat: new Types.ObjectId(chatId),
+    });
   }
 }

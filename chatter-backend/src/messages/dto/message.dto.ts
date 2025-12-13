@@ -1,5 +1,6 @@
 import { ArgsType, Field, InputType } from '@nestjs/graphql';
 import { IsArray, IsNotEmpty } from 'class-validator';
+import { PaginationArgs } from 'src/common/dto/pagination-args.dto';
 
 @InputType()
 export class CreateMessageInput {
@@ -13,7 +14,7 @@ export class CreateMessageInput {
 }
 
 @ArgsType()
-export class GetMessagesArgs {
+export class GetMessagesArgs extends PaginationArgs {
   @Field()
   chatId: string;
 }

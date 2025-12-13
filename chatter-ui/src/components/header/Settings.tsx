@@ -7,7 +7,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import { useState } from "react";
 import { onLogout } from "../../utils/logout";
-import useLogout from "../../hooks/useLogout";
+import useLogout from "../../hooks/auth/useLogout";
 import { snackVar } from "../../constants/snackbar";
 import { UNKNOWN_ERROR_SNACK_MESSAGE } from "../../constants/errors";
 

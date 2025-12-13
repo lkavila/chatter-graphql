@@ -32,7 +32,13 @@ const ChitListItem = ({ chat, onClick, selected }: ChitListItemProps) => {
                   {chat?.lastMessage?.user?.username}
                 </Typography>
                 { chat?.lastMessage &&
-                <div>
+                <div style={{
+                  overflow: 'hidden',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 1,
+                  lineClamp: 1,
+                  WebkitBoxOrient: 'vertical'
+                }}>
                   {`: ${chat?.lastMessage?.content}`}
                 </div>
                 }

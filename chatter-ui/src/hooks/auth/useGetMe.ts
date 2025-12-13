@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/react"
-import { graphql } from "../gql"
+import { graphql } from "../../gql"
 
 const getMeDocument = graphql(`
   query GetMe {

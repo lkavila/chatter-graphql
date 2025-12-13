@@ -1,4 +1,11 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Int,
+  Subscription,
+} from '@nestjs/graphql';
 import { ChatsService } from './chats.service';
 import { CreateChatInput } from './dto/create-chat.input';
 import { UpdateChatInput } from './dto/update-chat.input';
@@ -7,6 +14,7 @@ import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import type { TokenPayload } from 'src/auth/token-payload.interface';
 import { ChatDocument, ChatDocumentWithLastMessage } from './dto/chat.document';
+import { PaginationArgs } from 'src/common/dto/pagination-args.dto';
 
 @Resolver(() => ChatDocument)
 export class ChatsResolver {
@@ -23,8 +31,11 @@ export class ChatsResolver {
 
   @Query(() => [ChatDocumentWithLastMessage], { name: 'chats' })
   @UseGuards(GqlAuthGuard)
-  findAll(@CurrentUser() user: TokenPayload) {
-    return this.chatsService.findAllWithLastMessage(user._id);
+  findAll(
+    @Args() paginationArgs: PaginationArgs,
+    @CurrentUser() user: TokenPayload,
+  ) {
+    return this.chatsService.findAllWithLastMessage(user._id, paginationArgs);
   }
 
   @Query(() => ChatDocumentWithLastMessage, { name: 'chat', nullable: true })
@@ -48,5 +59,22 @@ export class ChatsResolver {
   @UseGuards(GqlAuthGuard)
   removeChat(@Args('id', { type: () => Int }) id: number) {
     return this.chatsService.remove(id);
+  }
+
+  @Subscription(() => ChatDocumentWithLastMessage, {
+    filter: (
+      payload: { chatCreated: ChatDocumentWithLastMessage },
+      _variables: { chatIds: string[] },
+      context,
+    ) => {
+      const userId = context.req.user._id;
+      return (
+        userId !== payload.chatCreated.createdBy ||
+        !payload.chatCreated.isPrivate
+      );
+    },
+  })
+  chatCreated(@CurrentUser() _user: TokenPayload) {
+    return this.chatsService.chatCreated();
   }
 }

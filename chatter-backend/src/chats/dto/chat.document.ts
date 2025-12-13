@@ -7,13 +7,16 @@ import { LastMessage } from 'src/messages/dto/last-message.out';
 @ObjectType()
 export class ChatDocumentWithLastMessage extends AbstractEntity {
   @Field(() => ID)
-  userId: Types.ObjectId | string;
+  createdBy: Types.ObjectId | string;
 
   @Field()
   isPrivate: boolean;
 
-  @Field(() => [String])
-  userIds: string[];
+  @Field()
+  isGroup: boolean;
+
+  @Field(() => [ID])
+  userIds: Types.ObjectId[];
 
   @Field({ nullable: true })
   name?: string;
@@ -32,10 +35,13 @@ export class ChatDocumentWithLastMessage extends AbstractEntity {
 @ObjectType()
 export class ChatDocument extends AbstractEntity {
   @Field(() => ID)
-  userId: Types.ObjectId | string;
+  createdBy: Types.ObjectId | string;
 
   @Field()
   isPrivate: boolean;
+
+  @Field()
+  isGroup: boolean;
 
   @Field(() => [String])
   userIds: string[];

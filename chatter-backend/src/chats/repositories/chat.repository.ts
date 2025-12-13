@@ -16,7 +16,11 @@ export class ChatRepository extends AbstractRepository<Chat> {
     return this.findOne(
       {
         _id: chatId,
-        $or: [{ userId }, { userIds: { $in: [userId] } }, { isPrivate: false }],
+        $or: [
+          { createdBy: userId },
+          { userIds: { $in: [userId] } },
+          { isPrivate: false },
+        ],
       },
       { _id: 1 },
     );

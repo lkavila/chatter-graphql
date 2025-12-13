@@ -6,6 +6,7 @@ import { PubSubModule } from 'src/common/pubsub/pubsub.module';
 import { MessageRepository } from './repositories/message.repository';
 import { DatabaseModule } from 'src/common/database/database.module';
 import { Message, MessageSchema } from './entities/message.entity';
+import { MessagesController } from './messages.controller';
 
 @Module({
   providers: [MessagesResolver, MessagesService, MessageRepository],
@@ -15,5 +16,6 @@ import { Message, MessageSchema } from './entities/message.entity';
     DatabaseModule.forFeature([{ name: Message.name, schema: MessageSchema }]),
   ],
   exports: [MessageRepository],
+  controllers: [MessagesController],
 })
 export class MessagesModule {}
