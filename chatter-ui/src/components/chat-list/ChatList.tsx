@@ -32,6 +32,9 @@ const ChatList = () => {
   // subscription to listen to new chats
   useChatCreated();
 
+  console.log("hasMore", data?.chats ? data?.chats?.length < chatsCount : false)
+
+  console.log("data?.chats?.length", data?.chats?.length, "chatsCount", chatsCount)
   return (
     <Grid container sx={{ height: "94vh" }}>
       <Grid
@@ -46,6 +49,7 @@ const ChatList = () => {
           <ChatListHeader handleAddChat={() => setChatListAddVisible(true)} />
           <Divider />
           <List
+            id="scrollableChatList"
             sx={{
               width: "100%",
               maxWidth: isMobile ? "100%" : "360px",
@@ -70,6 +74,12 @@ const ChatList = () => {
               next={() => fetchMore({ variables: { skip: data?.chats?.length } })}
               hasMore={data?.chats ? data?.chats?.length < chatsCount : false}
               loader={<h4>Loading...</h4>}
+              endMessage={
+                <p style={{ textAlign: 'center' }}>
+                  <b>You have no more chats</b>
+                </p>
+              }
+              scrollableTarget="scrollableChatList"
             >
               {data?.chats && [...data?.chats]
               .sort((a, b) => {

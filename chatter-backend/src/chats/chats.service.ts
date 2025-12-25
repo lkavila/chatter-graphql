@@ -62,6 +62,7 @@ export class ChatsService {
       limit: (pagintaionArgs?.limit && pagintaionArgs.limit) || 10,
       skip: (pagintaionArgs?.skip && pagintaionArgs.skip) || 0,
     };
+    console.log(currentOptions);
     const data = await this.chatRepository.model.aggregate([
       {
         $match: { ...this.userInChatFilter(userId), deleted: false },
@@ -87,6 +88,7 @@ export class ChatsService {
       {
         $sort: {
           'lastMessage.createdAt': -1,
+          createdAt: 1,
         },
       },
       { $skip: currentOptions.skip },
@@ -164,7 +166,10 @@ export class ChatsService {
     return this.pubSub.asyncIterableIterator(CHAT_CREATED);
   }
 
-  count() {
-    return this.chatRepository.model.countDocuments({ deleted: false });
+  count(userId: Types.ObjectId) {
+    return this.chatRepository.model.countDocuments({
+      ...this.userInChatFilter(userId),
+      deleted: false,
+    });
   }
 }
