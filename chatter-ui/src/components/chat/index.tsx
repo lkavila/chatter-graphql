@@ -41,7 +41,7 @@ const ChatComponent = ({ chat, isMobile }: ChatProps) => {
       divRef.current.scrollIntoView({ behavior: "smooth" });
       setTimeout(() => {
         divRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
+      }, 200);
     }
   };
 
@@ -56,6 +56,10 @@ const ChatComponent = ({ chat, isMobile }: ChatProps) => {
     });
     setNewMessage("");
     scrollToBottom();
+  };
+
+  const handleFetchMore = async () => {
+    await fetchMore({ variables: { skip: messages?.messages?.length } });
   };
 
   return (
@@ -79,14 +83,17 @@ const ChatComponent = ({ chat, isMobile }: ChatProps) => {
         )}
         <Typography variant="subtitle1">{chat?.name}</Typography>
       </Box>
-      <Box sx={{ overflow: "auto", maxHeight: "82vh", height: "82vh" }}>
         <InfiniteScroll
           dataLength={messages?.messages?.length || 0}
-          next={() => fetchMore({ variables: { skip: messages?.messages?.length } })}
+          next={() => handleFetchMore()}
           hasMore={messages?.messages && messagesCount ? messages.messages.length < messagesCount : false}
           loader={<h4>Loading...</h4>}
+          style={{ display: 'flex', flexDirection: 'column-reverse' }} //To put endMessage and loader to the top.
+          inverse={true}
+          height={'82vh'}
         >
           {[...(messages?.messages || [])]?.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+          ?.reverse()
           ?.map((message) => (
             <Grid container alignItems="center" marginBottom="1rem" key={message._id}>
               <Grid size={1}>
@@ -106,9 +113,8 @@ const ChatComponent = ({ chat, isMobile }: ChatProps) => {
               </Grid>
             </Grid>
           ))}
-          <div ref={divRef}></div>
         </InfiniteScroll>
-      </Box>
+        <div ref={divRef}></div>
       <Paper
         sx={{
           p: "2px 4px",

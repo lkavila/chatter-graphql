@@ -46,6 +46,7 @@ const ChatList = () => {
           <ChatListHeader handleAddChat={() => setChatListAddVisible(true)} />
           <Divider />
           <List
+            id="scrollableChatList"
             sx={{
               width: "100%",
               maxWidth: isMobile ? "100%" : "360px",
@@ -66,10 +67,16 @@ const ChatList = () => {
             }}
           >
             <InfiniteScroll
-              dataLength={chatsCount || 0}
+              dataLength={data?.chats?.length || 0}
               next={() => fetchMore({ variables: { skip: data?.chats?.length } })}
               hasMore={data?.chats ? data?.chats?.length < chatsCount : false}
               loader={<h4>Loading...</h4>}
+              endMessage={
+                <p style={{ textAlign: 'center' }}>
+                  <b>You have no more chats</b>
+                </p>
+              }
+              scrollableTarget="scrollableChatList"
             >
               {data?.chats && [...data?.chats]
               .sort((a, b) => {
