@@ -62,7 +62,7 @@ export class ChatsService {
       limit: (pagintaionArgs?.limit && pagintaionArgs.limit) || 10,
       skip: (pagintaionArgs?.skip && pagintaionArgs.skip) || 0,
     };
-    console.log(currentOptions);
+
     const data = await this.chatRepository.model.aggregate([
       {
         $match: { ...this.userInChatFilter(userId), deleted: false },

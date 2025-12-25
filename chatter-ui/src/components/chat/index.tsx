@@ -59,7 +59,6 @@ const ChatComponent = ({ chat, isMobile }: ChatProps) => {
   };
 
   const handleFetchMore = async () => {
-    console.log("fetch more", "skip", messages?.messages?.length)
     await fetchMore({ variables: { skip: messages?.messages?.length } });
   };
 

@@ -32,9 +32,6 @@ const ChatList = () => {
   // subscription to listen to new chats
   useChatCreated();
 
-  console.log("hasMore", data?.chats ? data?.chats?.length < chatsCount : false)
-
-  console.log("data?.chats?.length", data?.chats?.length, "chatsCount", chatsCount)
   return (
     <Grid container sx={{ height: "94vh" }}>
       <Grid
@@ -70,7 +67,7 @@ const ChatList = () => {
             }}
           >
             <InfiniteScroll
-              dataLength={chatsCount || 0}
+              dataLength={data?.chats?.length || 0}
               next={() => fetchMore({ variables: { skip: data?.chats?.length } })}
               hasMore={data?.chats ? data?.chats?.length < chatsCount : false}
               loader={<h4>Loading...</h4>}
