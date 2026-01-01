@@ -1,4 +1,3 @@
-import * as React from "react";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
@@ -18,7 +17,7 @@ const ChitListItem = ({ chat, onClick, selected }: ChitListItemProps) => {
       <ListItem alignItems="flex-start" disablePadding>
         <ListItemButton onClick={() => onClick()} selected={selected}>
           <ListItemAvatar>
-            <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+            <Avatar alt="Remy Sharp" src={chat?.lastMessage?.user?.profileUrl || ""} />
           </ListItemAvatar>
           <ListItemText
             primary={chat?.name}

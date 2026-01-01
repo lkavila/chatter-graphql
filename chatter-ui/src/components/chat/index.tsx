@@ -97,7 +97,12 @@ const ChatComponent = ({ chat, isMobile }: ChatProps) => {
           ?.map((message) => (
             <Grid container alignItems="center" marginBottom="1rem" key={message._id}>
               <Grid size={1}>
-                <Avatar src="" sx={{ width: 50, height: 50 }} />
+                <Stack alignItems="center" justifyContent="center">
+                  <Avatar src={message.user.profileUrl || ""} sx={{ width: 50, height: 50 }} />
+                  <Typography variant="caption" sx={{ marginLeft: "0.25rem", fontSize: "0.6rem" }}>
+                    {message.user.username}
+                  </Typography>
+                </Stack>
               </Grid>
               <Grid size={11}>
                 <Stack>

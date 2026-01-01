@@ -2,7 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { AbstractEntity } from 'src/common/database/abstract.entity';
 
-@Schema({ versionKey: false })
+@Schema({ versionKey: false, timestamps: true })
 @ObjectType()
 export class User extends AbstractEntity {
   @Prop()
@@ -26,11 +26,19 @@ export class User extends AbstractEntity {
 
   @Field()
   @Prop()
-  isTyping: boolean;
+  lastConnection: Date;
+
+  @Field(() => String, { nullable: true })
+  @Prop()
+  profileUrl?: string;
 
   @Field()
   @Prop()
-  lastConnection: Date;
+  createdAt: Date;
+
+  @Field()
+  @Prop()
+  updatedAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
