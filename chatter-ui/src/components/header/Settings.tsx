@@ -10,9 +10,12 @@ import { onLogout } from "../../utils/logout";
 import useLogout from "../../hooks/auth/useLogout";
 import { snackVar } from "../../constants/snackbar";
 import { UNKNOWN_ERROR_SNACK_MESSAGE } from "../../constants/errors";
+import router from "../Routes";
+import useGetMe from "../../hooks/auth/useGetMe";
 
 const Settings = () => {
   const { logout } = useLogout();
+  const me = useGetMe();
   const onUserLogout = async () => {
     try {
       handleCloseUserMenu();
@@ -23,8 +26,11 @@ const Settings = () => {
       snackVar(UNKNOWN_ERROR_SNACK_MESSAGE);
     }
   }
+  const onProfileClick = () => {
+    router.navigate("/profile");
+  }
   const settings = [
-    { id: 1, name: "Profile", onClick: () => { handleCloseUserMenu() } },
+    { id: 1, name: "Profile", onClick: () => onProfileClick() },
     { id: 2, name: "Logout", onClick: onUserLogout }];
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -40,7 +46,7 @@ const Settings = () => {
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip title="Open settings">
         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-          <Avatar alt="Remy Sharp" src="" />
+          <Avatar alt="Remy Sharp" src={me?.data?.me.profileUrl || ""} />
         </IconButton>
       </Tooltip>
       <Menu

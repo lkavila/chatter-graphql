@@ -14,6 +14,7 @@ import { PubSubModule } from './common/pubsub/pubsub.module';
 import { Request } from 'express';
 import { AuthService } from './auth/auth.service';
 import { MessagesModule } from './messages/messages.module';
+import { S3Module } from './common/s3/s3.module';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { MessagesModule } from './messages/messages.module';
     ChatsModule,
     MessagesModule,
     PubSubModule,
+    S3Module,
   ],
   controllers: [AppController],
   providers: [AppService],

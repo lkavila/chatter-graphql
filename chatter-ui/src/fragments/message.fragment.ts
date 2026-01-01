@@ -11,6 +11,7 @@ export const messageFragmentWithUser = graphql(`
       user {
         _id
         username
+        profileUrl
       }
     }
   `)

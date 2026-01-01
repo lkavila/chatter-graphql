@@ -27,7 +27,7 @@ const useLogin = () => {
       return
     }
     setError("");
-    await client.refetchQueries({ include: ["GetMe"] });
+    await client.refetchQueries({ include: ["Me"] });
   }
   return { login, error };
 }

@@ -16,9 +16,10 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 type Documents = {
     "\n    fragment ChatFragmentWithLastMessage on ChatDocumentWithLastMessage {\n      _id\n      createdBy\n      isPrivate\n      isGroup\n      userIds\n      name\n      deleted\n      createdAt\n      lastMessage {\n        ...MessageFragmentWithUser\n      }\n    }\n  ": typeof types.ChatFragmentWithLastMessageFragmentDoc,
     "\n    fragment ChatFragment on ChatDocument {\n      _id\n      createdBy\n      isPrivate\n      isGroup\n      userIds\n      name\n      deleted\n      createdAt\n    }\n  ": typeof types.ChatFragmentFragmentDoc,
-    "\n    fragment MessageFragmentWithUser on LastMessage {\n      _id\n      content\n      createdAt\n      updatedAt\n      deleted\n      chat\n      user {\n        _id\n        username\n      }\n    }\n  ": typeof types.MessageFragmentWithUserFragmentDoc,
-    "\n    fragment SearchUsersFragment on SearchUser {\n      _id\n      username\n      email\n      isOnline\n      lastConnection\n    }\n  ": typeof types.SearchUsersFragmentFragmentDoc,
-    "\n  query GetMe {\n    me {\n      _id\n      email\n    }\n  }\n": typeof types.GetMeDocument,
+    "\n    fragment MessageFragmentWithUser on LastMessage {\n      _id\n      content\n      createdAt\n      updatedAt\n      deleted\n      chat\n      user {\n        _id\n        username\n        profileUrl\n      }\n    }\n  ": typeof types.MessageFragmentWithUserFragmentDoc,
+    "\n    fragment SearchUsersFragment on SearchUser {\n      _id\n      username\n      email\n      isOnline\n      lastConnection\n      profileUrl\n    }\n  ": typeof types.SearchUsersFragmentFragmentDoc,
+    "\n    fragment MeFragment on User {\n      _id\n      email\n      username\n      profileUrl\n    }\n  ": typeof types.MeFragmentFragmentDoc,
+    "\n  query Me {\n    me {\n      _id\n      email\n      username\n      profileUrl\n    }\n  }\n": typeof types.MeDocument,
     "\n  mutation CreateChat($createChatInput: CreateChatInput!) {\n    createChat(createChatInput: $createChatInput) {\n      ...ChatFragmentWithLastMessage\n    }\n  }\n  ": typeof types.CreateChatDocument,
     "\n  query GetChats($skip: Int, $limit: Int) {\n    chats(skip: $skip, limit: $limit) {\n      ...ChatFragmentWithLastMessage\n    }\n  }\n  ": typeof types.GetChatsDocument,
     "\n  query GetChat($_id: String) {\n    chat(_id: $_id) {\n      ...ChatFragmentWithLastMessage\n    }\n  }\n  ": typeof types.GetChatDocument,
@@ -32,9 +33,10 @@ type Documents = {
 const documents: Documents = {
     "\n    fragment ChatFragmentWithLastMessage on ChatDocumentWithLastMessage {\n      _id\n      createdBy\n      isPrivate\n      isGroup\n      userIds\n      name\n      deleted\n      createdAt\n      lastMessage {\n        ...MessageFragmentWithUser\n      }\n    }\n  ": types.ChatFragmentWithLastMessageFragmentDoc,
     "\n    fragment ChatFragment on ChatDocument {\n      _id\n      createdBy\n      isPrivate\n      isGroup\n      userIds\n      name\n      deleted\n      createdAt\n    }\n  ": types.ChatFragmentFragmentDoc,
-    "\n    fragment MessageFragmentWithUser on LastMessage {\n      _id\n      content\n      createdAt\n      updatedAt\n      deleted\n      chat\n      user {\n        _id\n        username\n      }\n    }\n  ": types.MessageFragmentWithUserFragmentDoc,
-    "\n    fragment SearchUsersFragment on SearchUser {\n      _id\n      username\n      email\n      isOnline\n      lastConnection\n    }\n  ": types.SearchUsersFragmentFragmentDoc,
-    "\n  query GetMe {\n    me {\n      _id\n      email\n    }\n  }\n": types.GetMeDocument,
+    "\n    fragment MessageFragmentWithUser on LastMessage {\n      _id\n      content\n      createdAt\n      updatedAt\n      deleted\n      chat\n      user {\n        _id\n        username\n        profileUrl\n      }\n    }\n  ": types.MessageFragmentWithUserFragmentDoc,
+    "\n    fragment SearchUsersFragment on SearchUser {\n      _id\n      username\n      email\n      isOnline\n      lastConnection\n      profileUrl\n    }\n  ": types.SearchUsersFragmentFragmentDoc,
+    "\n    fragment MeFragment on User {\n      _id\n      email\n      username\n      profileUrl\n    }\n  ": types.MeFragmentFragmentDoc,
+    "\n  query Me {\n    me {\n      _id\n      email\n      username\n      profileUrl\n    }\n  }\n": types.MeDocument,
     "\n  mutation CreateChat($createChatInput: CreateChatInput!) {\n    createChat(createChatInput: $createChatInput) {\n      ...ChatFragmentWithLastMessage\n    }\n  }\n  ": types.CreateChatDocument,
     "\n  query GetChats($skip: Int, $limit: Int) {\n    chats(skip: $skip, limit: $limit) {\n      ...ChatFragmentWithLastMessage\n    }\n  }\n  ": types.GetChatsDocument,
     "\n  query GetChat($_id: String) {\n    chat(_id: $_id) {\n      ...ChatFragmentWithLastMessage\n    }\n  }\n  ": types.GetChatDocument,
@@ -71,15 +73,19 @@ export function graphql(source: "\n    fragment ChatFragment on ChatDocument {\n
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    fragment MessageFragmentWithUser on LastMessage {\n      _id\n      content\n      createdAt\n      updatedAt\n      deleted\n      chat\n      user {\n        _id\n        username\n      }\n    }\n  "): (typeof documents)["\n    fragment MessageFragmentWithUser on LastMessage {\n      _id\n      content\n      createdAt\n      updatedAt\n      deleted\n      chat\n      user {\n        _id\n        username\n      }\n    }\n  "];
+export function graphql(source: "\n    fragment MessageFragmentWithUser on LastMessage {\n      _id\n      content\n      createdAt\n      updatedAt\n      deleted\n      chat\n      user {\n        _id\n        username\n        profileUrl\n      }\n    }\n  "): (typeof documents)["\n    fragment MessageFragmentWithUser on LastMessage {\n      _id\n      content\n      createdAt\n      updatedAt\n      deleted\n      chat\n      user {\n        _id\n        username\n        profileUrl\n      }\n    }\n  "];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    fragment SearchUsersFragment on SearchUser {\n      _id\n      username\n      email\n      isOnline\n      lastConnection\n    }\n  "): (typeof documents)["\n    fragment SearchUsersFragment on SearchUser {\n      _id\n      username\n      email\n      isOnline\n      lastConnection\n    }\n  "];
+export function graphql(source: "\n    fragment SearchUsersFragment on SearchUser {\n      _id\n      username\n      email\n      isOnline\n      lastConnection\n      profileUrl\n    }\n  "): (typeof documents)["\n    fragment SearchUsersFragment on SearchUser {\n      _id\n      username\n      email\n      isOnline\n      lastConnection\n      profileUrl\n    }\n  "];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query GetMe {\n    me {\n      _id\n      email\n    }\n  }\n"): (typeof documents)["\n  query GetMe {\n    me {\n      _id\n      email\n    }\n  }\n"];
+export function graphql(source: "\n    fragment MeFragment on User {\n      _id\n      email\n      username\n      profileUrl\n    }\n  "): (typeof documents)["\n    fragment MeFragment on User {\n      _id\n      email\n      username\n      profileUrl\n    }\n  "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query Me {\n    me {\n      _id\n      email\n      username\n      profileUrl\n    }\n  }\n"): (typeof documents)["\n  query Me {\n    me {\n      _id\n      email\n      username\n      profileUrl\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

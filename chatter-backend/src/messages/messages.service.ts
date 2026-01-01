@@ -34,6 +34,7 @@ export class MessagesService {
       user: {
         _id: user._id,
         username: user.username,
+        profileUrl: user.profileUrl,
       },
     };
     await this.pubSub.publish(MESSAGE_CREATED, {
@@ -64,6 +65,7 @@ export class MessagesService {
             {
               $project: {
                 username: 1,
+                profileUrl: 1,
                 _id: 1,
               },
             },

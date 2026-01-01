@@ -101,7 +101,7 @@ export class ChatsService {
             {
               $match: { $expr: { $eq: ['$_id', '$$userId'] } },
             },
-            { $project: { username: 1, _id: 1 } },
+            { $project: { username: 1, profileUrl: 1, _id: 1 } },
           ],
           as: 'lastMessage.user',
         },

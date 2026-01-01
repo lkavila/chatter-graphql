@@ -14,4 +14,7 @@ export class SearchUser extends AbstractEntity {
 
   @Field()
   lastConnection: Date;
+
+  @Field(() => String, { nullable: true })
+  profileUrl?: string;
 }

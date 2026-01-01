@@ -7,6 +7,7 @@ import { MessageRepository } from './repositories/message.repository';
 import { DatabaseModule } from 'src/common/database/database.module';
 import { Message, MessageSchema } from './entities/message.entity';
 import { MessagesController } from './messages.controller';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   providers: [MessagesResolver, MessagesService, MessageRepository],
@@ -14,6 +15,7 @@ import { MessagesController } from './messages.controller';
     forwardRef(() => ChatsModule),
     PubSubModule,
     DatabaseModule.forFeature([{ name: Message.name, schema: MessageSchema }]),
+    UsersModule,
   ],
   exports: [MessageRepository],
   controllers: [MessagesController],

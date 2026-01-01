@@ -7,5 +7,15 @@ export const searchUsersFragment = graphql(`
       email
       isOnline
       lastConnection
+      profileUrl
+    }
+  `)
+
+export const MeFragment = graphql(`
+    fragment MeFragment on User {
+      _id
+      email
+      username
+      profileUrl
     }
   `)
